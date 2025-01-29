@@ -28,10 +28,14 @@ public partial class MainPage : ContentPage
         {
             for (int j = 0; j < gridHeight; j++)
             {
+                //DropGestureRecognizer dropGestureRecognizer = new();
+                //dropGestureRecognizer.Drop += OnDrop;
+
                 Image puzzle = new();
                 puzzle.WidthRequest = sideWidth;
                 puzzle.HeightRequest = sideHeight;
                 puzzle.GestureRecognizers.Add(dragGestureRecognizer);
+                //puzzle.GestureRecognizers.Add(dropGestureRecognizer);
                 puzzle.Source = $"image{r}.png";
                 AbsoluteLayout.SetLayoutBounds(puzzle, new(i * sideWidth + 675, j * sideHeight , sideWidth, sideHeight));
                 puzzles.Add(puzzle);
@@ -69,6 +73,8 @@ public partial class MainPage : ContentPage
                 Image box = new();
                 box.BackgroundColor = Color.FromRgb(i*j + (i+j) * 25, i*j + (i + j) * 25, i*j + (i + j) * 25);
                 box.GestureRecognizers.Add(dropGestureRecognizer);
+               
+                box.Source = null;
                 grid.Children.Add(box);
                 Grid.SetRow(box, i);
                 Grid.SetColumn(box, j);
@@ -82,17 +88,18 @@ public partial class MainPage : ContentPage
     private async void OnDrop(object sender, DropEventArgs e)
     {
         var imageSource = await e.Data.GetImageAsync();
-        var goalImage = sender as Image;
-        if (imageSource is null || goalImage is null)
+        if (imageSource is null)
         {
             return;
         }
-        goalImage.Source = imageSource;
 
-        foreach (var view in MainLayout.Children)
-        {
-            Debug.Print(view.ToString());
-        }
+        //foreach (var view in MainLayout.Children)
+        //{
+        //    if (view is Image image && image.Source == imageSource)
+        //    {
+        //        image.Source = "";
+        //    }
+        //}
     }
 
     private void RefreshBtn_OnClicked(object? sender, EventArgs e)
@@ -102,5 +109,8 @@ public partial class MainPage : ContentPage
             var img = box as Image;
             img.Source = "";
         }
+        MainLayout.Children.Clear();
+        initializePuzzle();
+        initialazeGrid();
     }
 }
